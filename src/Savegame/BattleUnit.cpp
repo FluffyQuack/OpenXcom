@@ -1844,6 +1844,12 @@ void BattleUnit::setVisible(bool flag)
  */
 bool BattleUnit::getVisible() const
 {
+
+//Fluffy ShowEntireMap
+#ifdef SHOWENTIREMAP
+	return true;
+#endif
+
 	if (getFaction() == FACTION_PLAYER)
 	{
 		return true;

@@ -28,6 +28,8 @@
 namespace OpenXcom
 {
 
+#define SHOWENTIREMAP //Fluffy ShowEntireMap
+
 class Surface;
 class MapData;
 class BattleUnit;

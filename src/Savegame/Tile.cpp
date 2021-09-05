@@ -412,6 +412,12 @@ void Tile::setDiscovered(bool flag, int part)
  */
 bool Tile::isDiscovered(int part) const
 {
+
+//Fluffy ShowEntireMap
+#ifdef SHOWENTIREMAP
+	return true;
+#endif
+
 	return _discovered[part];
 }
 
