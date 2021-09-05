@@ -75,6 +75,8 @@
 namespace OpenXcom
 {
 
+Text *_txtUnitName = 0; //Fluffy NameAboveUnits
+
 /**
  * Initializes all the elements in the Battlescape screen.
  * @param game Pointer to the core game.
@@ -158,6 +160,7 @@ BattlescapeState::BattlescapeState() : _reserve(0), _firstInit(true), _isMouseSc
 
 	_txtDebug = new Text(300, 10, 20, 0);
 	_txtTooltip = new Text(300, 10, x + 2, y - 10);
+	_txtUnitName = new Text(300, 10, 0, 0); //Fluffy NameAboveUnits
 
 	// Set palette
 	_game->getSavedGame()->getSavedBattle()->setPaletteByDepth(this);
@@ -243,6 +246,7 @@ BattlescapeState::BattlescapeState() : _reserve(0), _firstInit(true), _isMouseSc
 	add(_warning, "warning", "battlescape", _icons);
 	add(_txtDebug);
 	add(_txtTooltip, "textTooltip", "battlescape", _icons);
+	add(_txtUnitName, "textUnitName", "battlescape"); //Fluffy NameAboveUnits
 	add(_btnLaunch);
 	_game->getMod()->getSurfaceSet("SPICONS.DAT")->getFrame(0)->blit(_btnLaunch);
 	add(_btnPsi);
@@ -449,6 +453,10 @@ BattlescapeState::BattlescapeState() : _reserve(0), _firstInit(true), _isMouseSc
 
 	_txtTooltip->setHighContrast(true);
 
+	//Fluffy NameAboveUnits
+	_txtUnitName->setColor(Palette::blockOffset(3)); //Blue
+	_txtUnitName->setHighContrast(true);
+
 	_btnReserveNone->setGroup(&_reserve);
 	_btnReserveSnap->setGroup(&_reserve);
 	_btnReserveAimed->setGroup(&_reserve);
@@ -539,6 +547,12 @@ void BattlescapeState::init()
 		_btnReserveAuto->setGroup(&_reserve);
 	}
 	_txtTooltip->setText("");
+
+	//Fluffy NameAboveUnits: Just a debug test I might leave in for the heck of it
+	_txtUnitName->setText("HELLO FAKEPOSTMAN");
+	_txtUnitName->setX(5);
+	_txtUnitName->setY(5);
+
 	_btnReserveKneel->toggle(_save->getKneelReserved());
 	_battleGame->setKneelReserved(_save->getKneelReserved());
 	if (_autosave)

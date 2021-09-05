@@ -41,6 +41,8 @@ class Timer;
 class WarningMessage;
 class BattlescapeGame;
 
+extern Text *_txtUnitName; //Fluffy NameAboveUnits
+
 /**
  * Battlescape screen which shows the tactical battle.
  */

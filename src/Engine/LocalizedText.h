@@ -58,8 +58,9 @@ public:
 	LocalizedText &arg(const std::string &) OX_REQUIRED_RESULT;
 	template <typename T> LocalizedText arg(T) const OX_REQUIRED_RESULT;
 	template <typename T> LocalizedText &arg(T) OX_REQUIRED_RESULT;
-private:
-	std::string _text; ///< The actual localized text.
+
+	std::string _text; ///< The actual localized text. (Fluffy NameAboveUnits: I made this public so code in Map.cpp could access it)
+  private:
 	unsigned _nextArg; ///< The next argument ID.
 	LocalizedText(const std::string &, unsigned);
 };

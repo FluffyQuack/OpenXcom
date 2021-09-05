@@ -501,6 +501,8 @@ void Map::drawTerrain(Surface *surface)
 
 	NumberText *_numWaypid = 0;
 
+	_txtUnitName->setText(""); //Fluffy NameAboveUnits
+
 	// if we got bullet, get the highest x and y tiles to draw it on
 	if (_projectile && _explosions.empty())
 	{
@@ -623,6 +625,7 @@ void Map::drawTerrain(Surface *surface)
 	}
 
 	surface->lock();
+	BattleUnit *unitOnTileSelector = 0; //Fluffy NameAboveUnits
 	for (int itZ = beginZ; itZ <= endZ; itZ++)
 	{
 		bool topLayer = itZ == endZ;
@@ -681,10 +684,21 @@ void Map::drawTerrain(Surface *surface)
 					{
 						if (_camera->getViewLevel() == itZ)
 						{
+							unitOnTileSelector = unit; //Fluffy NameAboveUnits
 							if (_cursorType != CT_AIM)
 							{
 								if (unit && (unit->getVisible() || _save->getDebugMode()))
+								{
 									frameNumber = (_animFrame % 2); // yellow box
+
+									//Fluffy NameAboveUnits
+									if ((unit->getFaction() != FACTION_HOSTILE || unit->getOriginalFaction() == FACTION_PLAYER))
+									{
+										_txtUnitName->setText(_game->getLanguage()->getString(unit->getRankString())._text + " " + unit->getName(_game->getLanguage(), false));
+										_txtUnitName->setX(screenPosition.x - (_txtUnitName->getTextWidth() / 2) + 16);
+										_txtUnitName->setY(screenPosition.y - 6);
+									}
+								}
 								else
 									frameNumber = 0; // red box
 							}
@@ -1177,7 +1191,7 @@ void Map::drawTerrain(Surface *surface)
 		}
 	}
 	unit = (BattleUnit*)_save->getSelectedUnit();
-	if (unit && (_save->getSide() == FACTION_PLAYER || _save->getDebugMode()) && unit->getPosition().z <= _camera->getViewLevel())
+	if (unit && unit != unitOnTileSelector && (_save->getSide() == FACTION_PLAYER || _save->getDebugMode()) && unit->getPosition().z <= _camera->getViewLevel()) //Fluffy NameAboveUnits: Don't show arrow if cursor is on the unit (we display name instead)
 	{
 		_camera->convertMapToScreen(unit->getPosition(), &screenPosition);
 		screenPosition += _camera->getMapOffset();
