@@ -837,6 +837,7 @@ void SavedBattleGame::endTurn()
 {
 	if (_side == FACTION_PLAYER)
 	{
+		getBattleState()->SetUIVisibility(0); //Fluffy IngameDuringHiddenMovement: Turn UI off
 		if (_selectedUnit && _selectedUnit->getOriginalFaction() == FACTION_PLAYER)
 			_lastSelectedUnit = _selectedUnit;
 		_selectedUnit =  0;
@@ -848,6 +849,7 @@ void SavedBattleGame::endTurn()
 		// if there is no neutral team, we skip this and instantly prepare the new turn for the player
 		if (selectNextPlayerUnit() == 0)
 		{
+			getBattleState()->SetUIVisibility(1); //Fluffy IngameDuringHiddenMovement: Turn UI on
 			prepareNewTurn();
 			_turn++;
 			_side = FACTION_PLAYER;
@@ -862,6 +864,7 @@ void SavedBattleGame::endTurn()
 	}
 	else if (_side == FACTION_NEUTRAL)
 	{
+		getBattleState()->SetUIVisibility(1); //Fluffy IngameDuringHiddenMovement: Turn UI on
 		prepareNewTurn();
 		_turn++;
 		_side = FACTION_PLAYER;

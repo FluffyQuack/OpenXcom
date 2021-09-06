@@ -234,6 +234,8 @@ public:
 	void stopScrolling(Action *action);
 	/// Autosave next turn.
 	void autosave();
+	//Fluffy IngameDuringHiddenMovement: This turns the UI elements on and off. This is meant to be used when ending a turn
+	void SetUIVisibility(bool visible);
 };
 
 }

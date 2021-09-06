@@ -225,14 +225,16 @@ void Map::draw()
 			txtUnitNames[i].txt->setText("");
 	}
 
-	if ((_save->getSelectedUnit() && _save->getSelectedUnit()->getVisible()) || _unitDying || _save->getSelectedUnit() == 0 || _save->getDebugMode() || _projectileInFOV || _explosionInFOV)
+
+	//Fluffy IngameDuringHiddenMovement: Commented parts of this out as we'll want to always show ingame graphics during the enemy turn
+	//if ((_save->getSelectedUnit() && _save->getSelectedUnit()->getVisible()) || _unitDying || _save->getSelectedUnit() == 0 || _save->getDebugMode() || _projectileInFOV || _explosionInFOV)
 	{
 		drawTerrain(this);
 	}
-	else
+	/*else
 	{
 		_message->blit(this);
-	}
+	}*/
 }
 
 /**
@@ -538,7 +540,7 @@ void Map::drawTerrain(Surface *surface)
 		// if the projectile is outside the viewport - center it back on it
 		_camera->convertVoxelToScreen(_projectile->getPosition(), &bulletPositionScreen);
 
-		if (_projectileInFOV)
+		if (_projectileInFOV && (_save->getSide() == FACTION_PLAYER || (_save->getTile(_projectile->getPosition()) && _save->getTile(_projectile->getPosition())->getVisible() > 0))) //Fluffy IngameDuringHiddenMovement
 		{
 			Position newCam = _camera->getMapOffset();
 			if (newCam.z != bulletHighZ) //switch level

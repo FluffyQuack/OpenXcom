@@ -2364,4 +2364,87 @@ void BattlescapeState::autosave()
 	_autosave = true;
 }
 
+//Fluffy IngameDuringHiddenMovement: This turns the UI elements on and off. This is meant to be used when ending a turn
+void BattlescapeState::SetUIVisibility(bool visible)
+{
+	//TODO: We should ensure this doesn't toggle the visibility of something in the wrong way (for instance, I'm not sure how the btnLaunch and btnPsi buttons work)
+	_icons->setVisible(visible);
+	_rank->setVisible(visible);
+	_txtName->setVisible(visible);
+
+	_numLayers->setVisible(visible);
+	_numTimeUnits->setVisible(visible);
+	_numEnergy->setVisible(visible);
+	_numHealth->setVisible(visible);
+	_numMorale->setVisible(visible);
+	_barTimeUnits->setVisible(visible);
+	_barEnergy->setVisible(visible);
+	_barHealth->setVisible(visible);
+	_barMorale->setVisible(visible);
+	if (visible == 0)
+	{
+		_reserve->toggle(visible);
+		_btnLeftHandItem->setVisible(visible);
+		_numAmmoLeft->setVisible(visible);
+		_btnRightHandItem->setVisible(visible);
+		_numAmmoRight->setVisible(visible);
+		for (int i = 0; i < VISIBLE_MAX; ++i)
+		{
+			_btnVisibleUnit[i]->setVisible(visible);
+			_numVisibleUnit[i]->setVisible(visible);
+		}
+	}
+	//_warning->setVisible(visible);
+	_txtTooltip->setVisible(visible);
+	/*_btnLaunch->setVisible(visible);
+	_btnPsi->setVisible(visible);*/
+	/*add(_rank, "rank", "battlescape", _icons);
+	add(_btnUnitUp, "buttonUnitUp", "battlescape", _icons);
+	add(_btnUnitDown, "buttonUnitDown", "battlescape", _icons);
+	add(_btnMapUp, "buttonMapUp", "battlescape", _icons);
+	add(_btnMapDown, "buttonMapDown", "battlescape", _icons);
+	add(_btnShowMap, "buttonShowMap", "battlescape", _icons);
+	add(_btnKneel, "buttonKneel", "battlescape", _icons);
+	add(_btnInventory, "buttonInventory", "battlescape", _icons);
+	add(_btnCenter, "buttonCenter", "battlescape", _icons);
+	add(_btnNextSoldier, "buttonNextSoldier", "battlescape", _icons);
+	add(_btnNextStop, "buttonNextStop", "battlescape", _icons);
+	add(_btnShowLayers, "buttonShowLayers", "battlescape", _icons);
+	add(_numLayers, "numLayers", "battlescape", _icons);
+	add(_btnHelp, "buttonHelp", "battlescape", _icons);
+	add(_btnEndTurn, "buttonEndTurn", "battlescape", _icons);
+	add(_btnAbort, "buttonAbort", "battlescape", _icons);
+	add(_btnStats, "buttonStats", "battlescape", _icons);
+	add(_txtName, "textName", "battlescape", _icons);
+	add(_numTimeUnits, "numTUs", "battlescape", _icons);
+	add(_numEnergy, "numEnergy", "battlescape", _icons);
+	add(_numHealth, "numHealth", "battlescape", _icons);
+	add(_numMorale, "numMorale", "battlescape", _icons);
+	add(_barTimeUnits, "barTUs", "battlescape", _icons);
+	add(_barEnergy, "barEnergy", "battlescape", _icons);
+	add(_barHealth, "barHealth", "battlescape", _icons);
+	add(_barMorale, "barMorale", "battlescape", _icons);
+	add(_btnReserveNone, "buttonReserveNone", "battlescape", _icons);
+	add(_btnReserveSnap, "buttonReserveSnap", "battlescape", _icons);
+	add(_btnReserveAimed, "buttonReserveAimed", "battlescape", _icons);
+	add(_btnReserveAuto, "buttonReserveAuto", "battlescape", _icons);
+	add(_btnReserveKneel, "buttonReserveKneel", "battlescape", _icons);
+	add(_btnZeroTUs, "buttonZeroTUs", "battlescape", _icons);
+	add(_btnLeftHandItem, "buttonLeftHand", "battlescape", _icons);
+	add(_numAmmoLeft, "numAmmoLeft", "battlescape", _icons);
+	add(_btnRightHandItem, "buttonRightHand", "battlescape", _icons);
+	add(_numAmmoRight, "numAmmoRight", "battlescape", _icons);
+	for (int i = 0; i < VISIBLE_MAX; ++i)
+	{
+		add(_btnVisibleUnit[i]);
+		add(_numVisibleUnit[i]);
+	}
+	add(_warning, "warning", "battlescape", _icons);
+	add(_txtDebug);
+	add(_txtTooltip, "textTooltip", "battlescape", _icons);
+
+	add(_btnLaunch);
+	add(_btnPsi);*/
+}
+
 }
