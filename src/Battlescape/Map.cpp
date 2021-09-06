@@ -218,6 +218,13 @@ void Map::draw()
 		}
 	}
 
+	//Fluffy NameAboveUnits: We reset all unit names here so they don't display by default (they get added to visible units during drawTerrain()
+	for (int i = 0; i < MAXUNITNAMES; i++)
+	{
+		if(txtUnitNames[i].unit)
+			txtUnitNames[i].txt->setText("");
+	}
+
 	if ((_save->getSelectedUnit() && _save->getSelectedUnit()->getVisible()) || _unitDying || _save->getSelectedUnit() == 0 || _save->getDebugMode() || _projectileInFOV || _explosionInFOV)
 	{
 		drawTerrain(this);
@@ -501,8 +508,6 @@ void Map::drawTerrain(Surface *surface)
 
 	NumberText *_numWaypid = 0;
 
-	_txtUnitName->setText(""); //Fluffy NameAboveUnits
-
 	// if we got bullet, get the highest x and y tiles to draw it on
 	if (_projectile && _explosions.empty())
 	{
@@ -688,17 +693,7 @@ void Map::drawTerrain(Surface *surface)
 							if (_cursorType != CT_AIM)
 							{
 								if (unit && (unit->getVisible() || _save->getDebugMode()))
-								{
 									frameNumber = (_animFrame % 2); // yellow box
-
-									//Fluffy NameAboveUnits
-									if ((unit->getFaction() != FACTION_HOSTILE || unit->getOriginalFaction() == FACTION_PLAYER))
-									{
-										_txtUnitName->setText(_game->getLanguage()->getString(unit->getRankString())._text + " " + unit->getName(_game->getLanguage(), false));
-										_txtUnitName->setX(screenPosition.x - (_txtUnitName->getTextWidth() / 2) + 16);
-										_txtUnitName->setY(screenPosition.y - 6);
-									}
-								}
 								else
 									frameNumber = 0; // red box
 							}
@@ -717,6 +712,78 @@ void Map::drawTerrain(Surface *surface)
 							frameNumber = 2; // blue box
 							tmpSurface = _game->getMod()->getSurfaceSet("CURSOR.PCK")->getFrame(frameNumber);
 							tmpSurface->blitNShade(surface, screenPosition.x, screenPosition.y, 0);
+						}
+					}
+
+					//Fluffy NameAboveUnits: Render names above units that are visible and under player control (or started under player control)
+					if (_camera->getViewLevel() == itZ && unit && unit->getVisible() && (unit->getFaction() != FACTION_HOSTILE || unit->getOriginalFaction() == FACTION_PLAYER))
+					{
+						//Try to find current unit in txtUnitNames array. If found, then we re-use entry
+						unitName_s *unitName = 0;
+						for (int i = 0; i < MAXUNITNAMES; i++)
+						{
+							if (txtUnitNames[i].unit == unit)
+							{
+								unitName = &txtUnitNames[i];
+								break;
+							}
+						}
+
+						//If not found, then find an unused entry in the txtUnitNames array
+						if (unitName == 0)
+						{
+							for (int i = 0; i < MAXUNITNAMES; i++)
+							{
+								if (txtUnitNames[i].unit == 0)
+								{
+									txtUnitNames[i].unit = unit;
+									unitName = &txtUnitNames[i];
+									break;
+								}
+							}
+						}
+
+						//If a proper entry was found, then render the name
+						if (unitName)
+						{
+							//Limit name to the first word, but we also maintain a minimum and maximum size
+							int strPos = unit->getName(_game->getLanguage(), false).find_first_of(' ');
+							if (strPos == -1)
+								strPos = unit->getName(_game->getLanguage(), false).length();
+							if (strPos < 2)
+								strPos = unit->getName(_game->getLanguage(), false).find_first_of(' ', strPos + 1);
+							if (strPos > 10)
+								strPos = 10;
+							if (unit->getFaction() != unit->getOriginalFaction()) //If this is a controlled unit, then add a prefix
+							{
+								std::string alignment;
+								if (unit->getOriginalFaction() == FACTION_HOSTILE)
+									alignment = "Nice ";
+								else
+									alignment = "Evil ";
+								unitName->txt->setText(alignment + unit->getName(_game->getLanguage(), false).substr(0, strPos));
+							}
+							else
+								unitName->txt->setText(unit->getName(_game->getLanguage(), false).substr(0, strPos));
+
+							//Calcuate rendering postion
+							Position renderPos;
+							calculateWalkingOffset(unit, &renderPos);
+							renderPos.x += screenPosition.x - (unitName->txt->getTextWidth() / 2) + 16;
+							renderPos.y += screenPosition.y - 6;
+							renderPos.y += 24 - (unit->getHeight() + unit->getFloatHeight());
+							if (unit->isKneeled())
+								renderPos.y -= 2;
+							if (unit->getArmor()->getSize() > 1)
+								renderPos.y -= 13;
+							unitName->txt->setX(renderPos.x);
+							unitName->txt->setY(renderPos.y);
+
+							//By default the text colour is blue, but it can animate if mouse cursor is highlighting unit
+							if (unit == unitOnTileSelector)
+								unitName->txt->setColor(Palette::blockOffset((_animFrame % 2) ? 6 : 3)); //Alternate between two shades of blue
+							else
+								unitName->txt->setColor(Palette::blockOffset(3)); //Blue
 						}
 					}
 
@@ -1191,7 +1258,7 @@ void Map::drawTerrain(Surface *surface)
 		}
 	}
 	unit = (BattleUnit*)_save->getSelectedUnit();
-	if (unit && unit != unitOnTileSelector && (_save->getSide() == FACTION_PLAYER || _save->getDebugMode()) && unit->getPosition().z <= _camera->getViewLevel()) //Fluffy NameAboveUnits: Don't show arrow if cursor is on the unit (we display name instead)
+	if (unit && (_save->getSide() == FACTION_PLAYER || _save->getDebugMode()) && unit->getPosition().z <= _camera->getViewLevel())
 	{
 		_camera->convertMapToScreen(unit->getPosition(), &screenPosition);
 		screenPosition += _camera->getMapOffset();
@@ -1208,7 +1275,7 @@ void Map::drawTerrain(Surface *surface)
 		}
 		if (this->getCursorType() != CT_NONE)
 		{
-			_arrow->blitNShade(surface, screenPosition.x + offset.x + (_spriteWidth / 2) - (_arrow->getWidth() / 2), screenPosition.y + offset.y - _arrow->getHeight() + arrowBob[_animFrame], 0);
+			_arrow->blitNShade(surface, screenPosition.x + offset.x + (_spriteWidth / 2) - (_arrow->getWidth() / 2), screenPosition.y + offset.y - _arrow->getHeight() + arrowBob[_animFrame] - 7, 0); //Fluffy NameAboveUnits: Adjusted this position so the arrow is above the unit name
 		}
 	}
 	delete _numWaypid;

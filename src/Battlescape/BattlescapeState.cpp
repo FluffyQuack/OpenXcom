@@ -75,7 +75,7 @@
 namespace OpenXcom
 {
 
-Text *_txtUnitName = 0; //Fluffy NameAboveUnits
+unitName_s txtUnitNames[MAXUNITNAMES]; //Fluffy NameAboveUnits: Since these have to be initialized the same time as other UI elements before we know the quantity of units in a mission, we give this array a large static size
 
 /**
  * Initializes all the elements in the Battlescape screen.
@@ -160,7 +160,13 @@ BattlescapeState::BattlescapeState() : _reserve(0), _firstInit(true), _isMouseSc
 
 	_txtDebug = new Text(300, 10, 20, 0);
 	_txtTooltip = new Text(300, 10, x + 2, y - 10);
-	_txtUnitName = new Text(300, 10, 0, 0); //Fluffy NameAboveUnits
+
+	//Fluffy NameAboveUnits: Create all the text instances for names above units
+	for (int i = 0; i < MAXUNITNAMES; i++)
+	{
+		txtUnitNames[i].txt = new Text(150, 10, 0, 0);
+		txtUnitNames[i].unit = 0;
+	}
 
 	// Set palette
 	_game->getSavedGame()->getSavedBattle()->setPaletteByDepth(this);
@@ -175,6 +181,15 @@ BattlescapeState::BattlescapeState() : _reserve(0), _firstInit(true), _isMouseSc
 	}
 
 	add(_map);
+
+	//Fluffy NameAboveUnits: We want these texts to render on top of all map graphics but before other UI graphics
+	for (int i = 0; i < MAXUNITNAMES; i++)
+	{
+		add(txtUnitNames[i].txt, "textUnitName", "battlescape");
+		txtUnitNames[i].txt->setHighContrast(true);
+		txtUnitNames[i].txt->setText("");
+	}
+
 	add(_icons);
 
 	// Add in custom reserve buttons
@@ -246,7 +261,7 @@ BattlescapeState::BattlescapeState() : _reserve(0), _firstInit(true), _isMouseSc
 	add(_warning, "warning", "battlescape", _icons);
 	add(_txtDebug);
 	add(_txtTooltip, "textTooltip", "battlescape", _icons);
-	add(_txtUnitName, "textUnitName", "battlescape"); //Fluffy NameAboveUnits
+
 	add(_btnLaunch);
 	_game->getMod()->getSurfaceSet("SPICONS.DAT")->getFrame(0)->blit(_btnLaunch);
 	add(_btnPsi);
@@ -453,10 +468,6 @@ BattlescapeState::BattlescapeState() : _reserve(0), _firstInit(true), _isMouseSc
 
 	_txtTooltip->setHighContrast(true);
 
-	//Fluffy NameAboveUnits
-	_txtUnitName->setColor(Palette::blockOffset(3)); //Blue
-	_txtUnitName->setHighContrast(true);
-
 	_btnReserveNone->setGroup(&_reserve);
 	_btnReserveSnap->setGroup(&_reserve);
 	_btnReserveAimed->setGroup(&_reserve);
@@ -547,11 +558,6 @@ void BattlescapeState::init()
 		_btnReserveAuto->setGroup(&_reserve);
 	}
 	_txtTooltip->setText("");
-
-	//Fluffy NameAboveUnits: Just a debug test I might leave in for the heck of it
-	_txtUnitName->setText("HELLO FAKEPOSTMAN");
-	_txtUnitName->setX(5);
-	_txtUnitName->setY(5);
 
 	_btnReserveKneel->toggle(_save->getKneelReserved());
 	_battleGame->setKneelReserved(_save->getKneelReserved());

@@ -41,7 +41,14 @@ class Timer;
 class WarningMessage;
 class BattlescapeGame;
 
-extern Text *_txtUnitName; //Fluffy NameAboveUnits
+//Fluffy NameAboveUnits
+struct unitName_s
+{
+	Text *txt;
+	BattleUnit *unit;
+};
+#define MAXUNITNAMES 100
+extern unitName_s txtUnitNames[MAXUNITNAMES];
 
 /**
  * Battlescape screen which shows the tactical battle.
