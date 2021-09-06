@@ -150,6 +150,8 @@ public:
 	void setWaitForAltitude(bool wait);
 	/// Waits until the UFO reaches the right altitude.
 	bool getWaitForAltitude() const;
+	//Fluffy DogfightSpeedUp: Handle input
+	void handle(Action *action);
 };
 
 }

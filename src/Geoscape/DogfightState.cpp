@@ -48,9 +48,12 @@
 #include "../Savegame/AlienMission.h"
 #include "DogfightErrorState.h"
 #include "../Mod/RuleInterface.h"
+#include "../Engine/Action.h" //Fluffy DogfightSpeedUp
 
 namespace OpenXcom
 {
+
+static bool speedUp = 0; //Fluffy DogfightSpeedUp
 
 // UFO blobs graphics ...
 const int DogfightState::_ufoBlobs[8][13][13] =
@@ -237,6 +240,8 @@ DogfightState::DogfightState(GeoscapeState *state, Craft *craft, Ufo *ufo) : _st
 			_minimized(false), _endDogfight(false), _animatingHit(false), _waitForPoly(false), _waitForAltitude(false), _ufoSize(0), _craftHeight(0), _currentCraftDamageColor(0),
 			_interceptionNumber(0), _interceptionsCount(0), _x(0), _y(0), _minimizedIconX(0), _minimizedIconY(0)
 {
+	speedUp = 0; //Fluffy DogfightSpeedUp
+
 	_screen = false;
 
 	_craft->setInDogfight(true);
@@ -578,10 +583,17 @@ DogfightState::~DogfightState()
  */
 void DogfightState::think()
 {
-	if (!_endDogfight)
+	//Fluffy DogfightSpeedUp: If speedUp is true, we'll make the dogfight happen 5 times faster
+	int iterations = 1;
+	if(speedUp)
+		iterations = 5;
+	for (int i = 0; i < iterations; i++)
 	{
-		update();
-		_craftDamageAnimTimer->think(this, 0);
+		if (!_endDogfight)
+		{
+			update();
+			_craftDamageAnimTimer->think(this, 0);
+		}
 	}
 	if (!_craft->isInDogfight() || _craft->getDestination() != _ufo || _ufo->getStatus() == Ufo::LANDED)
 	{
@@ -1871,6 +1883,20 @@ void DogfightState::setWaitForAltitude(bool wait)
 bool DogfightState::getWaitForAltitude() const
 {
 	return _waitForAltitude;
+}
+
+//Fluffy DogfightSpeedUp: Handle input
+void DogfightState::handle(Action *action)
+{
+	if (action->getDetails()->key.keysym.sym == SDLK_SPACE)
+	{
+		if (action->getDetails()->type == SDL_KEYDOWN)
+			speedUp = 1;
+		else if (action->getDetails()->type == SDL_KEYUP)
+			speedUp = 0;
+	}
+	
+	State::handle(action);
 }
 
 }
