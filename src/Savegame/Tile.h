@@ -28,7 +28,7 @@
 namespace OpenXcom
 {
 
-#define SHOWENTIREMAP //Fluffy ShowEntireMap
+//#define SHOWENTIREMAP //Fluffy ShowEntireMap
 
 class Surface;
 class MapData;
