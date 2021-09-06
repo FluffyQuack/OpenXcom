@@ -1330,7 +1330,11 @@ void BattlescapeState::updateSoldierInfo(bool checkFOV)
 		return;
 	}
 
-	_txtName->setText(battleUnit->getName(_game->getLanguage(), false));
+	//Fluffy ShowRankInBattlescapeUI
+	if (battleUnit->getOriginalFaction() != FACTION_HOSTILE)
+		_txtName->setText(_game->getLanguage()->getString(battleUnit->getRankString())._text + " " + battleUnit->getName(_game->getLanguage(), false));
+	else
+		_txtName->setText(battleUnit->getName(_game->getLanguage(), false));
 	Soldier *soldier = battleUnit->getGeoscapeSoldier();
 	if (soldier != 0)
 	{
