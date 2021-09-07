@@ -54,6 +54,8 @@ public:
 	/// Closes the window.
 	void close();
 	void resize(int &dX, int &dY);
+	//Fluffy IngameDuringHiddenMovement: Override default blit function
+	void blit();
 };
 
 }
