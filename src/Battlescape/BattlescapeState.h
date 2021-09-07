@@ -50,6 +50,19 @@ struct unitName_s
 #define MAXUNITNAMES 100
 extern unitName_s txtUnitNames[MAXUNITNAMES];
 
+//Fluffy ShowDamageTaken
+#define DAMAGETAKEN_ANIMATIONMAX 40
+#define DAMAGETAKEN_MAXINSTANCES 30
+struct damageTakenText_s
+{
+	int damageTaken;
+	Position pos;
+	int animationProgress;
+	Text *txt;
+	bool stunDamage;
+};
+extern damageTakenText_s damageTakenText[DAMAGETAKEN_MAXINSTANCES];
+
 /**
  * Battlescape screen which shows the tactical battle.
  */

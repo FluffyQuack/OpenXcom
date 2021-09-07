@@ -37,6 +37,8 @@
 #include "SavedBattleGame.h"
 #include "BattleUnitStatistics.h"
 #include "../fmath.h"
+#include "../Battlescape/BattlescapeState.h" //Fluffy ShowDamageTaken
+#include "../Interface/Text.h" //Fluffy ShowDamageTaken
 
 namespace OpenXcom
 {
@@ -1176,6 +1178,46 @@ int BattleUnit::damage(Position relative, int power, ItemDamageType type, bool i
 			}
 		}
 		power -= getArmor(side);
+	}
+
+	//Fluffy ShowDamageTaken
+	if (getVisible()) //Only show damage number if this is a player unit or if unit is within line-of-sight
+	{
+		bool stunDamage = type == DT_STUN;
+		int foundSlot = -1;
+		for (int i = 0; i < DAMAGETAKEN_MAXINSTANCES; i++) //Look for active slot matching current tile position
+		{
+			if (damageTakenText[i].animationProgress < DAMAGETAKEN_ANIMATIONMAX && damageTakenText[i].pos == _pos && damageTakenText[i].stunDamage == stunDamage)
+			{
+				foundSlot = i;
+				break;
+			}
+		}
+		if (foundSlot == -1) //Look for inactive slot if above search failed
+		{
+			for (int i = 0; i < DAMAGETAKEN_MAXINSTANCES; i++)
+			{
+				if (damageTakenText[i].animationProgress >= DAMAGETAKEN_ANIMATIONMAX)
+				{
+					foundSlot = i;
+					break;
+				}
+			}
+		}
+		if (foundSlot != -1) //Fill entry with damage info
+		{
+			if (damageTakenText[foundSlot].animationProgress >= DAMAGETAKEN_ANIMATIONMAX)
+			{
+				damageTakenText[foundSlot].pos = _pos;
+				damageTakenText[foundSlot].animationProgress = 0;
+				damageTakenText[foundSlot].damageTaken = power;
+				damageTakenText[foundSlot].stunDamage = stunDamage;
+			}
+			else
+			{
+				damageTakenText[foundSlot].damageTaken += power;
+			}
+		}
 	}
 
 	if (power > 0)

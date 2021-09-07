@@ -225,7 +225,12 @@ void Map::draw()
 			txtUnitNames[i].txt->setText("");
 	}
 
-
+	//Fluffy ShowDamageTaken
+	for (int i = 0; i < DAMAGETAKEN_MAXINSTANCES; i++)
+	{
+		damageTakenText[i].txt->setText("");
+	}
+	
 	//Fluffy IngameDuringHiddenMovement: Commented parts of this out as we'll want to always show ingame graphics during the enemy turn
 	//if ((_save->getSelectedUnit() && _save->getSelectedUnit()->getVisible()) || _unitDying || _save->getSelectedUnit() == 0 || _save->getDebugMode() || _projectileInFOV || _explosionInFOV)
 	{
@@ -651,6 +656,32 @@ void Map::drawTerrain(Surface *surface)
 					tile = _save->getTile(mapPosition);
 
 					if (!tile) continue;
+
+					//Fluffy ShowDamageTaken
+					for (int i = 0; i < DAMAGETAKEN_MAXINSTANCES; i++)
+					{
+						if (damageTakenText[i].animationProgress < DAMAGETAKEN_ANIMATIONMAX && damageTakenText[i].pos == mapPosition && (_save->getSide() == FACTION_PLAYER || tile->getVisible()))
+						{
+							damageTakenText[i].txt->setText("-" + std::to_string(damageTakenText[i].damageTaken));
+							damageTakenText[i].txt->setX(screenPosition.x + 18 + (damageTakenText[i].animationProgress / 2));
+							damageTakenText[i].txt->setY(screenPosition.y - (damageTakenText[i].animationProgress / 2));
+
+							if(1) //TFTD colours //TODO: Add a proper check here
+							{
+								if (damageTakenText[i].stunDamage)
+									damageTakenText[i].txt->setColor(Palette::blockOffset(15)); //Blue (blue in both water and land missions)
+								else
+									damageTakenText[i].txt->setColor(Palette::blockOffset(11)); //Red (red in land missions, and red-ish in water missions)
+							}
+							else //UFO colours
+							{
+								if (damageTakenText[i].stunDamage)
+									damageTakenText[i].txt->setColor(Palette::blockOffset(8)); //Blue
+								else
+									damageTakenText[i].txt->setColor(Palette::blockOffset(2)); //Red
+							}
+						}
+					}
 
 					if (tile->isDiscovered(2))
 					{
@@ -1432,6 +1463,13 @@ void Map::animate(bool redraw)
 				cacheUnit(*i);
 			}
 		}
+	}
+
+	//Fluffy ShowDamageTaken
+	for (int i = 0; i < DAMAGETAKEN_MAXINSTANCES; i++)
+	{
+		if (damageTakenText[i].animationProgress < DAMAGETAKEN_ANIMATIONMAX)
+			damageTakenText[i].animationProgress++;
 	}
 
 	if (redraw) _redraw = true;

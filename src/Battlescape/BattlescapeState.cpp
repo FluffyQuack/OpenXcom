@@ -76,6 +76,7 @@ namespace OpenXcom
 {
 
 unitName_s txtUnitNames[MAXUNITNAMES]; //Fluffy NameAboveUnits: Since these have to be initialized the same time as other UI elements before we know the quantity of units in a mission, we give this array a large static size
+damageTakenText_s damageTakenText[DAMAGETAKEN_MAXINSTANCES]; //Fluffy ShowDamageTaken
 
 /**
  * Initializes all the elements in the Battlescape screen.
@@ -168,6 +169,18 @@ BattlescapeState::BattlescapeState() : _reserve(0), _firstInit(true), _isMouseSc
 		txtUnitNames[i].unit = 0;
 	}
 
+	//Fluffy ShowDamageTaken
+	for (int i = 0; i < DAMAGETAKEN_MAXINSTANCES; i++)
+	{
+		damageTakenText[i].txt = new Text(50, 10, 20, 20);
+		damageTakenText[i].damageTaken = 0;
+		damageTakenText[i].pos.x = 0;
+		damageTakenText[i].pos.y = 0;
+		damageTakenText[i].pos.z = 0;
+		damageTakenText[i].animationProgress = DAMAGETAKEN_ANIMATIONMAX;
+		damageTakenText[i].stunDamage = 0;
+	}
+
 	// Set palette
 	_game->getSavedGame()->getSavedBattle()->setPaletteByDepth(this);
 
@@ -188,6 +201,14 @@ BattlescapeState::BattlescapeState() : _reserve(0), _firstInit(true), _isMouseSc
 		add(txtUnitNames[i].txt, "textUnitName", "battlescape");
 		txtUnitNames[i].txt->setHighContrast(true);
 		txtUnitNames[i].txt->setText("");
+	}
+
+	//Fluffy ShowDamageTaken
+	for (int i = 0; i < DAMAGETAKEN_MAXINSTANCES; i++)
+	{
+		add(damageTakenText[i].txt, "damageTakenText", "battlescape");
+		damageTakenText[i].txt->setHighContrast(true);
+		damageTakenText[i].txt->setText("");
 	}
 
 	add(_icons);
