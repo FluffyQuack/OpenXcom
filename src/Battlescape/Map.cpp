@@ -813,10 +813,21 @@ void Map::drawTerrain(Surface *surface)
 							unitName->txt->setY(renderPos.y);
 
 							//By default the text colour is blue, but it can animate if mouse cursor is highlighting unit
-							if (unit == unitOnTileSelector)
-								unitName->txt->setColor(Palette::blockOffset((_animFrame % 2) ? 6 : 3)); //Alternate between two shades of blue
-							else
-								unitName->txt->setColor(Palette::blockOffset(3)); //Blue
+							if (1) //TFTD colours //TODO: Add a proper check here
+							{
+								if (unit == unitOnTileSelector)
+									unitName->txt->setColor(Palette::blockOffset((_animFrame % 2) ? 15 : 3)); //Alternate between two shades of blue (one is white on land missions)
+								else
+									unitName->txt->setColor(Palette::blockOffset(3)); //White (land missions) and light blue (water missions)
+							}
+							else //UFO colours
+							{
+								if (unit == unitOnTileSelector)
+									unitName->txt->setColor(Palette::blockOffset((_animFrame % 2) ? 14 : 0)); //Alternate between white and a greyish blue
+								else
+									unitName->txt->setColor(Palette::blockOffset(0)); //White
+							}
+							
 						}
 					}
 
