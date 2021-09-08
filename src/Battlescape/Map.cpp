@@ -515,6 +515,20 @@ void Map::drawTerrain(Surface *surface)
 
 	NumberText *_numWaypid = 0;
 
+	//Fluffy NameAboveUnits (TODO: We should move this check to somewhere else as this value never changes after game has started)
+	bool isTFTD = false;
+	for (std::vector<std::pair<std::string, bool> >::const_iterator i = Options::mods.begin(); i != Options::mods.end(); ++i)
+	{
+		if (i->second)
+		{
+			if (i->first == "xcom2")
+			{
+				isTFTD = true;
+				break;
+			}
+		}
+	}
+
 	// if we got bullet, get the highest x and y tiles to draw it on
 	if (_projectile && _explosions.empty())
 	{
@@ -787,7 +801,7 @@ void Map::drawTerrain(Surface *surface)
 							unitName->txt->setY(renderPos.y);
 
 							//By default the text colour is blue, but it can animate if mouse cursor is highlighting unit
-							if (1) //TFTD colours //TODO: Add a proper check here
+							if (isTFTD) //TFTD colours
 							{
 								if (unit == unitOnTileSelector)
 									unitName->txt->setColor(Palette::blockOffset((_animFrame % 2) ? 15 : 3)); //Alternate between two shades of blue (one is white on land missions)
@@ -1216,7 +1230,7 @@ void Map::drawTerrain(Surface *surface)
 				damageTakenText[i].txt->setX(screenPosition.x + 18 + (damageTakenText[i].animationProgress / 3));
 				damageTakenText[i].txt->setY(screenPosition.y + 4 - (damageTakenText[i].animationProgress / 3));
 
-				if (1) //TFTD colours //TODO: Add a proper check here
+				if (isTFTD) //TFTD colours //TODO: Add a proper check here
 				{
 					if (damageTakenText[i].stunDamage)
 						damageTakenText[i].txt->setColor(Palette::blockOffset(15)); //Blue (blue in both water and land missions)
