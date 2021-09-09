@@ -1219,30 +1219,34 @@ void Map::drawTerrain(Surface *surface)
 	//Fluffy ShowDamageTaken
 	for (int i = 0; i < DAMAGETAKEN_MAXINSTANCES; i++)
 	{
-		if (damageTakenText[i].animationProgress < DAMAGETAKEN_ANIMATIONMAX && (_save->getSide() == FACTION_PLAYER || tile->getVisible()))
+		if (damageTakenText[i].animationProgress < DAMAGETAKEN_ANIMATIONMAX)
 		{
 			mapPosition = Position(damageTakenText[i].pos.x, damageTakenText[i].pos.y, damageTakenText[i].pos.z);
 			_camera->convertMapToScreen(mapPosition, &screenPosition);
 			screenPosition += _camera->getMapOffset();
 			if (screenPosition.x > -_spriteWidth && screenPosition.x < surface->getWidth() + _spriteWidth && screenPosition.y > -_spriteHeight && screenPosition.y < surface->getHeight() + _spriteHeight)
 			{
-				damageTakenText[i].txt->setText("-" + std::to_string(damageTakenText[i].damageTaken));
-				damageTakenText[i].txt->setX(screenPosition.x + 18 + (damageTakenText[i].animationProgress / 3));
-				damageTakenText[i].txt->setY(screenPosition.y + 4 - (damageTakenText[i].animationProgress / 3));
+				tile = _save->getTile(mapPosition);
+				if (tile && (_save->getSide() == FACTION_PLAYER || tile->getVisible()))
+				{
+					damageTakenText[i].txt->setText("-" + std::to_string(damageTakenText[i].damageTaken));
+					damageTakenText[i].txt->setX(screenPosition.x + 18 + (damageTakenText[i].animationProgress / 3));
+					damageTakenText[i].txt->setY(screenPosition.y + 4 - (damageTakenText[i].animationProgress / 3));
 
-				if (isTFTD) //TFTD colours //TODO: Add a proper check here
-				{
-					if (damageTakenText[i].stunDamage)
-						damageTakenText[i].txt->setColor(Palette::blockOffset(15)); //Blue (blue in both water and land missions)
-					else
-						damageTakenText[i].txt->setColor(Palette::blockOffset(11)); //Red (red in land missions, and red-ish in water missions)
-				}
-				else //UFO colours
-				{
-					if (damageTakenText[i].stunDamage)
-						damageTakenText[i].txt->setColor(Palette::blockOffset(8)); //Blue
-					else
-						damageTakenText[i].txt->setColor(Palette::blockOffset(2)); //Red
+					if (isTFTD) //TFTD colours
+					{
+						if (damageTakenText[i].stunDamage)
+							damageTakenText[i].txt->setColor(Palette::blockOffset(15)); //Blue (blue in both water and land missions)
+						else
+							damageTakenText[i].txt->setColor(Palette::blockOffset(11)); //Red (red in land missions, and red-ish in water missions)
+					}
+					else //UFO colours
+					{
+						if (damageTakenText[i].stunDamage)
+							damageTakenText[i].txt->setColor(Palette::blockOffset(8)); //Blue
+						else
+							damageTakenText[i].txt->setColor(Palette::blockOffset(2)); //Red
+					}
 				}
 			}
 		}
