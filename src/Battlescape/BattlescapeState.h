@@ -64,6 +64,7 @@ struct damageTakenText_s
 	bool useRenderOffset;
 };
 extern damageTakenText_s damageTakenText[DAMAGETAKEN_MAXINSTANCES];
+extern Text *hiddenMovementText; //Fluffy IngameDuringHiddenMovement
 
 /**
  * Battlescape screen which shows the tactical battle.

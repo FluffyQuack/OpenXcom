@@ -128,6 +128,12 @@ NextTurnState::NextTurnState(SavedBattleGame *battleGame, BattlescapeState *stat
 		_timer->onTimer((StateHandler)&NextTurnState::close);
 		_timer->start();
 	}
+
+	//Fluffy IngameDuringHiddenMovement
+	if (_battleGame->getSide() == FACTION_PLAYER)
+	{
+		hiddenMovementText->setHidden(1);
+	}
 }
 
 /**
@@ -188,6 +194,12 @@ void NextTurnState::close()
 		{
 			_state->autosave();
 		}
+	}
+
+	//Fluffy IngameDuringHiddenMovement
+	if (_battleGame->getSide() != FACTION_PLAYER)
+	{
+		hiddenMovementText->setHidden(0);
 	}
 }
 

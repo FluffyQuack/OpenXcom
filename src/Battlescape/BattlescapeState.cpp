@@ -77,6 +77,7 @@ namespace OpenXcom
 
 unitName_s txtUnitNames[MAXUNITNAMES]; //Fluffy NameAboveUnits: Since these have to be initialized the same time as other UI elements before we know the quantity of units in a mission, we give this array a large static size
 damageTakenText_s damageTakenText[DAMAGETAKEN_MAXINSTANCES]; //Fluffy ShowDamageTaken
+Text *hiddenMovementText; //Fluffy IngameDuringHiddenMovement
 
 /**
  * Initializes all the elements in the Battlescape screen.
@@ -181,6 +182,8 @@ BattlescapeState::BattlescapeState() : _reserve(0), _firstInit(true), _isMouseSc
 		damageTakenText[i].stunDamage = 0;
 	}
 
+	hiddenMovementText = new Text(300, 20, 0, 0); //Fluffy IngameDuringHiddenMovement
+
 	// Set palette
 	_game->getSavedGame()->getSavedBattle()->setPaletteByDepth(this);
 
@@ -210,6 +213,16 @@ BattlescapeState::BattlescapeState() : _reserve(0), _firstInit(true), _isMouseSc
 		damageTakenText[i].txt->setHighContrast(true);
 		damageTakenText[i].txt->setText("");
 	}
+
+	//Fluffy IngameDuringHiddenMovement
+	add(hiddenMovementText, "hiddenMovementText", "battlescape");
+	hiddenMovementText->setHighContrast(true);
+	hiddenMovementText->setText("HIDDEN MOVEMENT");
+	hiddenMovementText->setBig();
+	hiddenMovementText->setColor(Palette::blockOffset(3));
+	hiddenMovementText->setX((_map->getWidth() / 2) - (hiddenMovementText->getTextWidth() / 2));
+	hiddenMovementText->setY(20);
+	hiddenMovementText->setHidden(1);
 
 	add(_icons);
 

@@ -40,6 +40,7 @@
 #include "../Engine/Logger.h"
 #include "SerializationHelper.h"
 #include "../Mod/RuleItem.h"
+#include "../Interface/Text.h" //Fluffy IngameDuringHiddenMovement
 
 namespace OpenXcom
 {
