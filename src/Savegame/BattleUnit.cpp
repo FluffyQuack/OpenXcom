@@ -1181,13 +1181,15 @@ int BattleUnit::damage(Position relative, int power, ItemDamageType type, bool i
 	}
 
 	//Fluffy ShowDamageTaken
+	if(power < 0)
+		power = 0;
 	if (getVisible()) //Only show damage number if this is a player unit or if unit is within line-of-sight
 	{
 		bool stunDamage = type == DT_STUN;
 		int foundSlot = -1;
 		for (int i = 0; i < DAMAGETAKEN_MAXINSTANCES; i++) //Look for active slot matching current tile position
 		{
-			if (damageTakenText[i].animationProgress < DAMAGETAKEN_ANIMATIONMAX && damageTakenText[i].pos == _pos && damageTakenText[i].stunDamage == stunDamage)
+			if (damageTakenText[i].animationProgress < DAMAGETAKEN_ANIMATIONMAX && damageTakenText[i].tilePos == _pos && damageTakenText[i].stunDamage == stunDamage)
 			{
 				foundSlot = i;
 				break;
@@ -1208,10 +1210,12 @@ int BattleUnit::damage(Position relative, int power, ItemDamageType type, bool i
 		{
 			if (damageTakenText[foundSlot].animationProgress >= DAMAGETAKEN_ANIMATIONMAX)
 			{
-				damageTakenText[foundSlot].pos = _pos;
+				damageTakenText[foundSlot].tilePos = _pos;
 				damageTakenText[foundSlot].animationProgress = 0;
 				damageTakenText[foundSlot].damageTaken = power;
 				damageTakenText[foundSlot].stunDamage = stunDamage;
+				damageTakenText[foundSlot].useRenderOffset = 0;
+				damageTakenText[foundSlot].renderOffset = {0, 0, 0};
 			}
 			else
 			{

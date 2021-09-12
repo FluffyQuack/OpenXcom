@@ -174,9 +174,9 @@ BattlescapeState::BattlescapeState() : _reserve(0), _firstInit(true), _isMouseSc
 	{
 		damageTakenText[i].txt = new Text(50, 10, 20, 20);
 		damageTakenText[i].damageTaken = 0;
-		damageTakenText[i].pos.x = 0;
-		damageTakenText[i].pos.y = 0;
-		damageTakenText[i].pos.z = 0;
+		damageTakenText[i].tilePos.x = 0;
+		damageTakenText[i].tilePos.y = 0;
+		damageTakenText[i].tilePos.z = 0;
 		damageTakenText[i].animationProgress = DAMAGETAKEN_ANIMATIONMAX;
 		damageTakenText[i].stunDamage = 0;
 	}

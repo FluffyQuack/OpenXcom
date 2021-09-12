@@ -1221,7 +1221,7 @@ void Map::drawTerrain(Surface *surface)
 	{
 		if (damageTakenText[i].animationProgress < DAMAGETAKEN_ANIMATIONMAX)
 		{
-			mapPosition = Position(damageTakenText[i].pos.x, damageTakenText[i].pos.y, damageTakenText[i].pos.z);
+			mapPosition = Position(damageTakenText[i].tilePos.x, damageTakenText[i].tilePos.y, damageTakenText[i].tilePos.z);
 			_camera->convertMapToScreen(mapPosition, &screenPosition);
 			screenPosition += _camera->getMapOffset();
 			if (screenPosition.x > -_spriteWidth && screenPosition.x < surface->getWidth() + _spriteWidth && screenPosition.y > -_spriteHeight && screenPosition.y < surface->getHeight() + _spriteHeight)
@@ -1229,9 +1229,38 @@ void Map::drawTerrain(Surface *surface)
 				tile = _save->getTile(mapPosition);
 				if (tile && (_save->getSide() == FACTION_PLAYER || tile->getVisible()))
 				{
+					unit = tile->getUnit();
+					Position renderPos;
+					if(unit)
+					{
+						if(!unit->getVisible())
+							continue;
+						calculateWalkingOffset(unit, &renderPos);
+						if (unit->isKneeled())
+							renderPos.y -= 2;
+						if (unit->getArmor()->getSize() > 1)
+							renderPos.y += 2;
+						renderPos.y -= unit->getHeight() + unit->getFloatHeight();
+						renderPos.y += 28;
+						damageTakenText[i].renderOffset = renderPos;
+						damageTakenText[i].useRenderOffset = 1;
+					}
+					else
+					{
+						if (damageTakenText[i].useRenderOffset)
+							renderPos = damageTakenText[i].renderOffset;
+						else
+						{
+							renderPos.x = 0;
+							renderPos.y = 20;
+						}
+					}
+					renderPos.x += 18;
+					renderPos.x += screenPosition.x + (damageTakenText[i].animationProgress / 3);
+					renderPos.y += screenPosition.y - (damageTakenText[i].animationProgress / 3);
 					damageTakenText[i].txt->setText("-" + std::to_string(damageTakenText[i].damageTaken));
-					damageTakenText[i].txt->setX(screenPosition.x + 18 + (damageTakenText[i].animationProgress / 3));
-					damageTakenText[i].txt->setY(screenPosition.y + 4 - (damageTakenText[i].animationProgress / 3));
+					damageTakenText[i].txt->setX(renderPos.x);
+					damageTakenText[i].txt->setY(renderPos.y);
 
 					if (isTFTD) //TFTD colours
 					{

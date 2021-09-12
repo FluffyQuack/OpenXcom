@@ -56,10 +56,12 @@ extern unitName_s txtUnitNames[MAXUNITNAMES];
 struct damageTakenText_s
 {
 	int damageTaken;
-	Position pos;
+	Position tilePos;
 	int animationProgress;
 	Text *txt;
 	bool stunDamage;
+	Position renderOffset;
+	bool useRenderOffset;
 };
 extern damageTakenText_s damageTakenText[DAMAGETAKEN_MAXINSTANCES];
 
