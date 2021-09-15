@@ -116,7 +116,10 @@ InventoryState::InventoryState(bool tu, BattlescapeState *parent) : _tu(tu), _pa
 	add(_window, "window", "inventory");
 	add(_blackBackground);
 	SDL_FillRect(_blackBackground->getSurface(), NULL, Palette::blockOffset(0) + 15);
-	_window->setColor(Palette::blockOffset(0) + 1); //TODO: Choose a different colour for UFO
+	if(isTFTD)
+		_window->setColor(Palette::blockOffset(0) + 1);
+	else
+		_window->setColor(Palette::blockOffset(0) + 8);
 
 	add(_bg);
 
