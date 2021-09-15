@@ -33,6 +33,7 @@ class SavedBattleGame;
 class BattlescapeState;
 class BattleUnit;
 class BattlescapeButton;
+class Window; //Fluffy ShowGraphicsBehindInventory
 
 /**
  * Screen which displays soldier's inventory.
@@ -40,6 +41,8 @@ class BattlescapeButton;
 class InventoryState : public State
 {
 private:
+	Window *_window; //Fluffy ShowGraphicsBehindInventory
+	Surface *_blackBackground; //Fluffy ShowGraphicsBehindInventory
 	Surface *_bg, *_soldier;
 	Text *_txtName, *_txtItem, *_txtAmmo, *_txtWeight, *_txtTus, *_txtFAcc, *_txtReact, *_txtPSkill, *_txtPStr;
 	BattlescapeButton *_btnOk, *_btnPrev, *_btnNext, *_btnUnload, *_btnGround, *_btnRank;
@@ -94,6 +97,9 @@ public:
 	void txtTooltipIn(Action *action);
 	/// Handler for hiding tooltip.
 	void txtTooltipOut(Action *action);
+
+	//Fluffy ShowGraphicsBehindInventory
+	void blit();
 
 private:
 	/// Update the visibility and icons for the template buttons

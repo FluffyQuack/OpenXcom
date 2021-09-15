@@ -46,6 +46,8 @@
 #include "BattlescapeGenerator.h"
 #include "TileEngine.h"
 #include "../Mod/RuleInterface.h"
+//#include "Map.h" //Fluffy ShowGraphicsBehindInventory
+#include "../Interface/Window.h" //Fluffy ShowGraphicsBehindInventory
 
 namespace OpenXcom
 {
@@ -77,6 +79,14 @@ InventoryState::InventoryState(bool tu, BattlescapeState *parent) : _tu(tu), _pa
 	}
 
 	// Create objects
+
+	//Fluffy ShowGraphicsBehindInventory
+	{
+		int buffer = 2;
+		_window = new Window(this, 320 + 8 + (buffer * 2), 200 + 8 + (buffer * 2), -4 + (-buffer), -4 + (-buffer));
+		_blackBackground = new Surface(320 + (buffer * 2), 200 + (buffer * 2), 0 - buffer, 0 - buffer);
+	}
+
 	_bg = new Surface(320, 200, 0, 0);
 	_soldier = new Surface(320, 200, 0, 0);
 	_txtName = new Text(210, 17, 28, 6);
@@ -102,11 +112,17 @@ InventoryState::InventoryState(bool tu, BattlescapeState *parent) : _tu(tu), _pa
 	// Set palette
 	setPalette("PAL_BATTLESCAPE");
 
+	//Fluffy ShowGraphicsBehindInventory
+	add(_window, "window", "inventory");
+	add(_blackBackground);
+	SDL_FillRect(_blackBackground->getSurface(), NULL, Palette::blockOffset(0) + 15);
+	_window->setColor(Palette::blockOffset(0) + 1); //TODO: Choose a different colour for UFO
+
 	add(_bg);
 
 	// Set up objects
 	_game->getMod()->getSurface("TAC01.SCR")->blit(_bg);
-
+	
 	add(_soldier);
 	add(_txtName, "textName", "inventory", _bg);
 	add(_txtTus, "textTUs", "inventory", _bg);
@@ -983,6 +999,16 @@ void InventoryState::_updateTemplateButtons(bool isVisible)
 		_btnCreateTemplate->clear();
 		_btnApplyTemplate->clear();
 	}
+}
+
+//Fluffy ShowGraphicsBehindInventory
+void InventoryState::blit()
+{
+	_parent->blit(); //Blit the BattlescapeState surface to the screen (so we get the ingame graphics behind the inventory graphics)
+	//_parent->getMap()->blit(_game->getScreen()->getSurface()); //Variant of above that shows only ingame graphics and not UI
+
+	for (std::vector<Surface *>::iterator i = _surfaces.begin(); i != _surfaces.end(); ++i)
+		(*i)->blit(_game->getScreen()->getSurface());
 }
 
 }
