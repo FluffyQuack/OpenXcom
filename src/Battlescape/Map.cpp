@@ -515,20 +515,6 @@ void Map::drawTerrain(Surface *surface)
 
 	NumberText *_numWaypid = 0;
 
-	//Fluffy NameAboveUnits (TODO: We should move this check to somewhere else as this value never changes after game has started)
-	bool isTFTD = false;
-	for (std::vector<std::pair<std::string, bool> >::const_iterator i = Options::mods.begin(); i != Options::mods.end(); ++i)
-	{
-		if (i->second)
-		{
-			if (i->first == "xcom2")
-			{
-				isTFTD = true;
-				break;
-			}
-		}
-	}
-
 	// if we got bullet, get the highest x and y tiles to draw it on
 	if (_projectile && _explosions.empty())
 	{

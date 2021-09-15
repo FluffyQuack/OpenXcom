@@ -95,6 +95,7 @@
 namespace OpenXcom
 {
 
+bool isTFTD = 0; //Fluffy NameAboveUnits
 int Mod::DOOR_OPEN;
 int Mod::SLIDING_DOOR_OPEN;
 int Mod::SLIDING_DOOR_CLOSE;
@@ -951,6 +952,20 @@ void Mod::loadAll(const std::vector< std::pair< std::string, std::vector<std::st
 	sortLists();
 	loadExtraResources();
 	modResources();
+
+	//Fluffy NameAboveUnits: Determine if we're playing UFO or TFTD (useful for checking what palette we should be using for certain features)
+	isTFTD = false;
+	for (std::vector<std::pair<std::string, bool> >::const_iterator i = Options::mods.begin(); i != Options::mods.end(); ++i)
+	{
+		if (i->second)
+		{
+			if (i->first == "xcom2")
+			{
+				isTFTD = true;
+				break;
+			}
+		}
+	}
 }
 
 /**

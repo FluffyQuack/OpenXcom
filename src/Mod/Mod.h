@@ -81,6 +81,8 @@ class RuleMusic;
 class RuleMissionScript;
 struct StatAdjustment;
 
+extern bool isTFTD; //Fluffy NameAboveUnits
+
 /**
  * Mod data used when loading resources
  */
