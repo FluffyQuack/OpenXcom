@@ -35,6 +35,9 @@
 #include "BattlescapeGame.h"
 #include "BattlescapeState.h"
 #include "../Mod/RuleInterface.h"
+//#include "Map.h" //Fluffy ShowGraphicsBehindInventory
+#include "../Interface/Window.h" //Fluffy ShowGraphicsBehindInventory
+#include "../Engine/Palette.h" //Fluffy ShowGraphicsBehindInventory
 
 namespace OpenXcom
 {
@@ -58,6 +61,14 @@ UnitInfoState::UnitInfoState(BattleUnit *unit, BattlescapeState *parent, bool fr
 	_battleGame = _game->getSavedGame()->getSavedBattle();
 
 	// Create objects
+
+	//Fluffy ShowGraphicsBehindInventory
+	{
+		int buffer = 2;
+		_window = new Window(this, 320 + 8 + (buffer * 2), 200 + 8 + (buffer * 2), -4 + (-buffer), -4 + (-buffer));
+		_blackBackground = new Surface(320 + (buffer * 2), 200 + (buffer * 2), 0 - buffer, 0 - buffer);
+	}
+
 	_bg = new Surface(320, 200, 0, 0);
 	_exit = new InteractiveSurface(320, 180, 0, 20);
 	_txtName = new Text(288, 17, 16, 4);
@@ -162,6 +173,15 @@ UnitInfoState::UnitInfoState(BattleUnit *unit, BattlescapeState *parent, bool fr
 
 	// Set palette
 	setPalette("PAL_BATTLESCAPE");
+
+	//Fluffy ShowGraphicsBehindInventory
+	add(_window, "window", "stats");
+	add(_blackBackground);
+	SDL_FillRect(_blackBackground->getSurface(), NULL, Palette::blockOffset(0) + 15);
+	if (isTFTD)
+		_window->setColor(Palette::blockOffset(0) + 1);
+	else
+		_window->setColor(Palette::blockOffset(4) + 8);
 
 	add(_bg);
 	add(_exit);
@@ -684,6 +704,16 @@ void UnitInfoState::exitClick(Action *)
 		_game->getScreen()->resetDisplay(false);
 	}
 	_game->popState();
+}
+
+//Fluffy ShowGraphicsBehindInventory
+void UnitInfoState::blit()
+{
+	_parent->blit(); //Blit the BattlescapeState surface to the screen (so we get the ingame graphics behind the inventory graphics)
+	//_parent->getMap()->blit(_game->getScreen()->getSurface()); //Variant of above that shows only ingame graphics and not UI
+
+	for (std::vector<Surface *>::iterator i = _surfaces.begin(); i != _surfaces.end(); ++i)
+		(*i)->blit(_game->getScreen()->getSurface());
 }
 
 }

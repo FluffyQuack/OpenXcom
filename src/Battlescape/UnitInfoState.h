@@ -29,6 +29,7 @@ class Bar;
 class Surface;
 class SavedBattleGame;
 class BattlescapeState;
+class Window; //Fluffy ShowGraphicsBehindInventory
 
 /**
  * Unit Info screen that shows all the
@@ -44,6 +45,8 @@ private:
 
 	bool _fromInventory, _mindProbe;
 
+	Window *_window; //Fluffy ShowGraphicsBehindInventory
+	Surface *_blackBackground; //Fluffy ShowGraphicsBehindInventory
 	Surface *_bg;
 	InteractiveSurface *_exit;
 	Text *_txtName;
@@ -74,6 +77,9 @@ public:
 	void btnNextClick(Action *action);
 	/// Handler for exiting the state.
 	void exitClick(Action *action);
+
+	//Fluffy ShowGraphicsBehindInventory
+	void blit();
 };
 
 }
