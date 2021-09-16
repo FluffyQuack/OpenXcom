@@ -191,7 +191,7 @@ void BattlescapeGame::handleAI(BattleUnit *unit)
 		if (_save->getSelectedUnit())
 		{
 			_parentState->updateSoldierInfo();
-			if (_save->getSide() == FACTION_PLAYER || _save->getSelectedUnit()->getVisible()) //Fluffy IngameDuringHiddenMovement
+			if (!Options::ingameDuringHiddenMovement || _save->getSide() == FACTION_PLAYER || _save->getSelectedUnit()->getVisible()) //Fluffy IngameDuringHiddenMovement
 				getMap()->getCamera()->centerOnPosition(_save->getSelectedUnit()->getPosition());
 			if (_save->getSelectedUnit()->getId() <= unit->getId())
 			{
@@ -313,7 +313,7 @@ void BattlescapeGame::handleAI(BattleUnit *unit)
 		if (_save->getSelectedUnit())
 		{
 			_parentState->updateSoldierInfo();
-			if (_save->getSide() == FACTION_PLAYER || _save->getSelectedUnit()->getVisible()) //Fluffy IngameDuringHiddenMovement
+			if (!Options::ingameDuringHiddenMovement || _save->getSide() == FACTION_PLAYER || _save->getSelectedUnit()->getVisible()) //Fluffy IngameDuringHiddenMovement
 				getMap()->getCamera()->centerOnPosition(_save->getSelectedUnit()->getPosition());
 			if (_save->getSelectedUnit()->getId() <= unit->getId())
 			{
@@ -1075,7 +1075,7 @@ void BattlescapeGame::popState()
 							_debugPlay = true;
 						}
 					}
-					if (_save->getSelectedUnit() && (_save->getSide() == FACTION_PLAYER || _save->getSelectedUnit()->getVisible())) //Fluffy IngameDuringHiddenMovement
+					if (_save->getSelectedUnit() && (!Options::ingameDuringHiddenMovement || _save->getSide() == FACTION_PLAYER || _save->getSelectedUnit()->getVisible())) //Fluffy IngameDuringHiddenMovement
 					{
 						getMap()->getCamera()->centerOnPosition(_save->getSelectedUnit()->getPosition());
 					}

@@ -56,7 +56,8 @@ NextTurnState::NextTurnState(SavedBattleGame *battleGame, BattlescapeState *stat
 	// Set palette
 	battleGame->setPaletteByDepth(this);
 
-	//add(_bg); //Fluffy IngameDuringHiddenMovement: Commented this out as we want ingame graphics to be the background, not a static colour
+	if(!Options::ingameDuringHiddenMovement) //Fluffy IngameDuringHiddenMovement: If IngameDuringHiddenMovement is true, then skip this as we want ingame graphics to be the background, not a static colour
+		add(_bg); 
 	add(_window);
 	add(_txtTitle, "messageWindows", "battlescape");
 	add(_txtTurn, "messageWindows", "battlescape");
@@ -130,7 +131,7 @@ NextTurnState::NextTurnState(SavedBattleGame *battleGame, BattlescapeState *stat
 	}
 
 	//Fluffy IngameDuringHiddenMovement
-	if (_battleGame->getSide() == FACTION_PLAYER)
+	if (Options::ingameDuringHiddenMovement && _battleGame->getSide() == FACTION_PLAYER)
 	{
 		hiddenMovementText->setHidden(1);
 	}
@@ -197,7 +198,7 @@ void NextTurnState::close()
 	}
 
 	//Fluffy IngameDuringHiddenMovement
-	if (_battleGame->getSide() != FACTION_PLAYER)
+	if (Options::ingameDuringHiddenMovement && _battleGame->getSide() != FACTION_PLAYER)
 	{
 		hiddenMovementText->setHidden(0);
 	}
@@ -213,7 +214,8 @@ void NextTurnState::resize(int &dX, int &dY)
 //Fluffy IngameDuringHiddenMovement: Override default blit function
 void NextTurnState::blit()
 {
-	_state->blit(); //Blit the BattlescapeState surface to the screen (so we get the ingame graphics behind the "next turn" window)
+	if(Options::ingameDuringHiddenMovement)
+		_state->blit(); //Blit the BattlescapeState surface to the screen (so we get the ingame graphics behind the "next turn" window)
 
 	for (std::vector<Surface *>::iterator i = _surfaces.begin(); i != _surfaces.end(); ++i)
 		(*i)->blit(_game->getScreen()->getSurface());

@@ -646,7 +646,7 @@ void ProjectileFlyBState::cancel()
 		_parent->getMap()->getProjectile()->skipTrajectory();
 		Position p = _parent->getMap()->getProjectile()->getPosition();
 
-		if ((_parent->getSave()->getSide() == FACTION_PLAYER || _parent->getSave()->getTile(p)->getVisible() > 0) && !_parent->getMap()->getCamera()->isOnScreen(Position(p.x / 16, p.y / 16, p.z / 24), false, 0, false)) //Fluffy IngameDuringHiddenMovement
+		if ((!Options::ingameDuringHiddenMovement || _parent->getSave()->getSide() == FACTION_PLAYER || _parent->getSave()->getTile(p)->getVisible() > 0) && !_parent->getMap()->getCamera()->isOnScreen(Position(p.x / 16, p.y / 16, p.z / 24), false, 0, false)) //Fluffy IngameDuringHiddenMovement
 			_parent->getMap()->getCamera()->centerOnPosition(Position(p.x/16, p.y/16, p.z/24));
 	}
 }

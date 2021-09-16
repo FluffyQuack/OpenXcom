@@ -134,7 +134,7 @@ void ExplosionBState::init()
 			else
 				_parent->getMod()->getSoundByDepth(_parent->getDepth(), Mod::LARGE_EXPLOSION)->play();
 
-			if (_parent->getSave()->getSide() == FACTION_PLAYER || t->getVisible() > 0) //Fluffy IngameDuringHiddenMovement
+			if (!Options::ingameDuringHiddenMovement || _parent->getSave()->getSide() == FACTION_PLAYER || t->getVisible() > 0) //Fluffy IngameDuringHiddenMovement
 				_parent->getMap()->getCamera()->centerOnPosition(t->getPosition(), false);
 		}
 		else
@@ -159,13 +159,13 @@ void ExplosionBState::init()
 			_parent->getMap()->getExplosions()->push_back(explosion);
 		}
 
-		if (_parent->getSave()->getSide() == FACTION_PLAYER || t->getVisible() > 0) //Fluffy IngameDuringHiddenMovement
+		if (!Options::ingameDuringHiddenMovement || _parent->getSave()->getSide() == FACTION_PLAYER || t->getVisible() > 0) //Fluffy IngameDuringHiddenMovement
 			_parent->getMap()->getCamera()->setViewLevel(_center.z / 24);
 
 		BattleUnit *target = t->getUnit();
 		if (_cosmetic && _parent->getSave()->getSide() == FACTION_HOSTILE && target && target->getFaction() == FACTION_PLAYER)
 		{
-			if (_parent->getSave()->getSide() == FACTION_PLAYER || t->getVisible() > 0) //Fluffy IngameDuringHiddenMovement
+			if (!Options::ingameDuringHiddenMovement || _parent->getSave()->getSide() == FACTION_PLAYER || t->getVisible() > 0) //Fluffy IngameDuringHiddenMovement
 				_parent->getMap()->getCamera()->centerOnPosition(t->getPosition(), false);
 		}
 		if (sound != -1 && !_cosmetic)

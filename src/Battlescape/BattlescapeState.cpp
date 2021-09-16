@@ -164,25 +164,32 @@ BattlescapeState::BattlescapeState() : _reserve(0), _firstInit(true), _isMouseSc
 	_txtTooltip = new Text(300, 10, x + 2, y - 10);
 
 	//Fluffy NameAboveUnits: Create all the text instances for names above units
-	for (int i = 0; i < MAXUNITNAMES; i++)
+	if (Options::nameAboveUnits)
 	{
-		txtUnitNames[i].txt = new Text(150, 10, 0, 0);
-		txtUnitNames[i].unit = 0;
+		for (int i = 0; i < MAXUNITNAMES; i++)
+		{
+			txtUnitNames[i].txt = new Text(150, 10, 0, 0);
+			txtUnitNames[i].unit = 0;
+		}
 	}
 
 	//Fluffy ShowDamageTaken
-	for (int i = 0; i < DAMAGETAKEN_MAXINSTANCES; i++)
+	if (Options::showDamageTaken)
 	{
-		damageTakenText[i].txt = new Text(50, 10, 20, 20);
-		damageTakenText[i].damageTaken = 0;
-		damageTakenText[i].tilePos.x = 0;
-		damageTakenText[i].tilePos.y = 0;
-		damageTakenText[i].tilePos.z = 0;
-		damageTakenText[i].animationProgress = DAMAGETAKEN_ANIMATIONMAX;
-		damageTakenText[i].stunDamage = 0;
+		for (int i = 0; i < DAMAGETAKEN_MAXINSTANCES; i++)
+		{
+			damageTakenText[i].txt = new Text(50, 10, 20, 20);
+			damageTakenText[i].damageTaken = 0;
+			damageTakenText[i].tilePos.x = 0;
+			damageTakenText[i].tilePos.y = 0;
+			damageTakenText[i].tilePos.z = 0;
+			damageTakenText[i].animationProgress = DAMAGETAKEN_ANIMATIONMAX;
+			damageTakenText[i].stunDamage = 0;
+		}
 	}
 
-	hiddenMovementText = new Text(300, 20, 0, 0); //Fluffy IngameDuringHiddenMovement
+	if(Options::ingameDuringHiddenMovement)
+		hiddenMovementText = new Text(300, 20, 0, 0); //Fluffy IngameDuringHiddenMovement
 
 	// Set palette
 	_game->getSavedGame()->getSavedBattle()->setPaletteByDepth(this);
@@ -199,30 +206,39 @@ BattlescapeState::BattlescapeState() : _reserve(0), _firstInit(true), _isMouseSc
 	add(_map);
 
 	//Fluffy NameAboveUnits: We want these texts to render on top of all map graphics but before other UI graphics
-	for (int i = 0; i < MAXUNITNAMES; i++)
+	if (Options::nameAboveUnits)
 	{
-		add(txtUnitNames[i].txt, "textUnitName", "battlescape");
-		txtUnitNames[i].txt->setHighContrast(true);
-		txtUnitNames[i].txt->setText("");
+		for (int i = 0; i < MAXUNITNAMES; i++)
+		{
+			add(txtUnitNames[i].txt, "textUnitName", "battlescape");
+			txtUnitNames[i].txt->setHighContrast(true);
+			txtUnitNames[i].txt->setText("");
+		}
 	}
 
 	//Fluffy ShowDamageTaken
-	for (int i = 0; i < DAMAGETAKEN_MAXINSTANCES; i++)
+	if (Options::showDamageTaken)
 	{
-		add(damageTakenText[i].txt, "damageTakenText", "battlescape");
-		damageTakenText[i].txt->setHighContrast(true);
-		damageTakenText[i].txt->setText("");
+		for (int i = 0; i < DAMAGETAKEN_MAXINSTANCES; i++)
+		{
+			add(damageTakenText[i].txt, "damageTakenText", "battlescape");
+			damageTakenText[i].txt->setHighContrast(true);
+			damageTakenText[i].txt->setText("");
+		}
 	}
 
 	//Fluffy IngameDuringHiddenMovement
-	add(hiddenMovementText, "hiddenMovementText", "battlescape");
-	hiddenMovementText->setHighContrast(true);
-	hiddenMovementText->setText("HIDDEN MOVEMENT");
-	hiddenMovementText->setBig();
-	hiddenMovementText->setColor(Palette::blockOffset(3));
-	hiddenMovementText->setX((_map->getWidth() / 2) - (hiddenMovementText->getTextWidth() / 2));
-	hiddenMovementText->setY(20);
-	hiddenMovementText->setHidden(1);
+	if(Options::ingameDuringHiddenMovement)
+	{
+		add(hiddenMovementText, "hiddenMovementText", "battlescape");
+		hiddenMovementText->setHighContrast(true);
+		hiddenMovementText->setText("HIDDEN MOVEMENT");
+		hiddenMovementText->setBig();
+		hiddenMovementText->setColor(Palette::blockOffset(3));
+		hiddenMovementText->setX((_map->getWidth() / 2) - (hiddenMovementText->getTextWidth() / 2));
+		hiddenMovementText->setY(20);
+		hiddenMovementText->setHidden(1);
+	}
 
 	add(_icons);
 
@@ -1366,7 +1382,7 @@ void BattlescapeState::updateSoldierInfo(bool checkFOV)
 	}
 
 	//Fluffy ShowRankInBattlescapeUI
-	if (battleUnit->getOriginalFaction() != FACTION_HOSTILE)
+	if (Options::showRankInBattlescapeUI && battleUnit->getOriginalFaction() != FACTION_HOSTILE)
 		_txtName->setText(_game->getLanguage()->getString(battleUnit->getRankString())._text + " " + battleUnit->getName(_game->getLanguage(), false));
 	else
 		_txtName->setText(battleUnit->getName(_game->getLanguage(), false));

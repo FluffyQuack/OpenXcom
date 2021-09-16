@@ -169,7 +169,7 @@ void UnitWalkBState::think()
 			if (!_parent->getMap()->getCamera()->isOnScreen(_unit->getPosition(), true, size, false) && _unit->getFaction() != FACTION_PLAYER && _unit->getVisible())
 				_parent->getMap()->getCamera()->centerOnPosition(_unit->getPosition());
 			// if the unit changed level, camera changes level with
-			if (_parent->getSave()->getSide() == FACTION_PLAYER || _unit->getVisible()) //Fluffy IngameDuringHiddenMovement
+			if (!Options::ingameDuringHiddenMovement || _parent->getSave()->getSide() == FACTION_PLAYER || _unit->getVisible()) //Fluffy IngameDuringHiddenMovement
 				_parent->getMap()->getCamera()->setViewLevel(_unit->getPosition().z);
 		}
 

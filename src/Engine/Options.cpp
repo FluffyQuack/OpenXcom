@@ -145,6 +145,12 @@ void create()
 	_info.push_back(OptionInfo("lazyLoadResources", &lazyLoadResources, true));
 	_info.push_back(OptionInfo("backgroundMute", &backgroundMute, false));
 
+	_info.push_back(OptionInfo("showIngameGraphicsBehindScreens", &showGraphicsBehindInventory, true)); //Fluffy ShowGraphicsBehindInventory
+	_info.push_back(OptionInfo("namesAboveUnits", &nameAboveUnits, true)); //Fluffy NameAboveUnits
+	_info.push_back(OptionInfo("ingameDuringHiddenMovement", &ingameDuringHiddenMovement, true)); //Fluffy IngameDuringHiddenMovement
+	_info.push_back(OptionInfo("showDamageTaken", &showDamageTaken, true)); //Fluffy ShowDamageTaken
+	_info.push_back(OptionInfo("showRankInBattlescapeUI", &showRankInBattlescapeUI, true)); //Fluffy ShowRankInBattlescapeUI
+
 	// advanced options
 	_info.push_back(OptionInfo("playIntro", &playIntro, true, "STR_PLAYINTRO", "STR_GENERAL"));
 	_info.push_back(OptionInfo("autosave", &autosave, true, "STR_AUTOSAVE", "STR_GENERAL"));

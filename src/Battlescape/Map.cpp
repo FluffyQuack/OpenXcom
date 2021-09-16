@@ -219,27 +219,33 @@ void Map::draw()
 	}
 
 	//Fluffy NameAboveUnits: We reset all unit names here so they don't display by default (they get added to visible units during drawTerrain()
-	for (int i = 0; i < MAXUNITNAMES; i++)
+	if (Options::nameAboveUnits)
 	{
-		if(txtUnitNames[i].unit)
-			txtUnitNames[i].txt->setText("");
+		for (int i = 0; i < MAXUNITNAMES; i++)
+		{
+			if(txtUnitNames[i].unit)
+				txtUnitNames[i].txt->setText("");
+		}
 	}
 
 	//Fluffy ShowDamageTaken
-	for (int i = 0; i < DAMAGETAKEN_MAXINSTANCES; i++)
+	if (Options::showDamageTaken)
 	{
-		damageTakenText[i].txt->setText("");
+		for (int i = 0; i < DAMAGETAKEN_MAXINSTANCES; i++)
+		{
+			damageTakenText[i].txt->setText("");
+		}
 	}
 	
-	//Fluffy IngameDuringHiddenMovement: Commented parts of this out as we'll want to always show ingame graphics during the enemy turn
-	//if ((_save->getSelectedUnit() && _save->getSelectedUnit()->getVisible()) || _unitDying || _save->getSelectedUnit() == 0 || _save->getDebugMode() || _projectileInFOV || _explosionInFOV)
+	//Fluffy IngameDuringHiddenMovement: Always do drawTerrain if ingameDuringHiddenMovement is true
+	if ((_save->getSelectedUnit() && _save->getSelectedUnit()->getVisible()) || _unitDying || _save->getSelectedUnit() == 0 || _save->getDebugMode() || _projectileInFOV || _explosionInFOV || Options::ingameDuringHiddenMovement)
 	{
 		drawTerrain(this);
 	}
-	/*else
+	else
 	{
 		_message->blit(this);
-	}*/
+	}
 }
 
 /**
@@ -545,7 +551,7 @@ void Map::drawTerrain(Surface *surface)
 		// if the projectile is outside the viewport - center it back on it
 		_camera->convertVoxelToScreen(_projectile->getPosition(), &bulletPositionScreen);
 
-		if (_projectileInFOV && (_save->getSide() == FACTION_PLAYER || (_save->getTile(_projectile->getPosition()) && _save->getTile(_projectile->getPosition())->getVisible() > 0))) //Fluffy IngameDuringHiddenMovement
+		if (_projectileInFOV && (!Options::ingameDuringHiddenMovement || _save->getSide() == FACTION_PLAYER || (_save->getTile(_projectile->getPosition()) && _save->getTile(_projectile->getPosition())->getVisible() > 0))) //Fluffy IngameDuringHiddenMovement
 		{
 			Position newCam = _camera->getMapOffset();
 			if (newCam.z != bulletHighZ) //switch level
@@ -723,7 +729,7 @@ void Map::drawTerrain(Surface *surface)
 					}
 
 					//Fluffy NameAboveUnits: Render names above units that are visible and under player control (or started under player control)
-					if (_camera->getViewLevel() == itZ && unit && unit->getVisible() && (unit->getFaction() != FACTION_HOSTILE || unit->getOriginalFaction() == FACTION_PLAYER))
+					if (Options::nameAboveUnits && _camera->getViewLevel() == itZ && unit && unit->getVisible() && (unit->getFaction() != FACTION_HOSTILE || unit->getOriginalFaction() == FACTION_PLAYER))
 					{
 						//Try to find current unit in txtUnitNames array. If found, then we re-use entry
 						unitName_s *unitName = 0;
@@ -1207,64 +1213,67 @@ void Map::drawTerrain(Surface *surface)
 	}
 
 	//Fluffy ShowDamageTaken
-	for (int i = 0; i < DAMAGETAKEN_MAXINSTANCES; i++)
+	if (Options::showDamageTaken)
 	{
-		if (damageTakenText[i].animationProgress < DAMAGETAKEN_ANIMATIONMAX)
+		for (int i = 0; i < DAMAGETAKEN_MAXINSTANCES; i++)
 		{
-			mapPosition = Position(damageTakenText[i].tilePos.x, damageTakenText[i].tilePos.y, damageTakenText[i].tilePos.z);
-			_camera->convertMapToScreen(mapPosition, &screenPosition);
-			screenPosition += _camera->getMapOffset();
-			if (screenPosition.x > -_spriteWidth && screenPosition.x < surface->getWidth() + _spriteWidth && screenPosition.y > -_spriteHeight && screenPosition.y < surface->getHeight() + _spriteHeight)
+			if (damageTakenText[i].animationProgress < DAMAGETAKEN_ANIMATIONMAX)
 			{
-				tile = _save->getTile(mapPosition);
-				if (tile && (_save->getSide() == FACTION_PLAYER || tile->getVisible()))
+				mapPosition = Position(damageTakenText[i].tilePos.x, damageTakenText[i].tilePos.y, damageTakenText[i].tilePos.z);
+				_camera->convertMapToScreen(mapPosition, &screenPosition);
+				screenPosition += _camera->getMapOffset();
+				if (screenPosition.x > -_spriteWidth && screenPosition.x < surface->getWidth() + _spriteWidth && screenPosition.y > -_spriteHeight && screenPosition.y < surface->getHeight() + _spriteHeight)
 				{
-					unit = tile->getUnit();
-					Position renderPos;
-					if(unit)
+					tile = _save->getTile(mapPosition);
+					if (tile && (_save->getSide() == FACTION_PLAYER || tile->getVisible()))
 					{
-						if(!unit->getVisible())
-							continue;
-						calculateWalkingOffset(unit, &renderPos);
-						if (unit->isKneeled())
-							renderPos.y -= 2;
-						if (unit->getArmor()->getSize() > 1)
-							renderPos.y += 2;
-						renderPos.y -= unit->getHeight() + unit->getFloatHeight();
-						renderPos.y += 28;
-						damageTakenText[i].renderOffset = renderPos;
-						damageTakenText[i].useRenderOffset = 1;
-					}
-					else
-					{
-						if (damageTakenText[i].useRenderOffset)
-							renderPos = damageTakenText[i].renderOffset;
+						unit = tile->getUnit();
+						Position renderPos;
+						if(unit)
+						{
+							if(!unit->getVisible())
+								continue;
+							calculateWalkingOffset(unit, &renderPos);
+							if (unit->isKneeled())
+								renderPos.y -= 2;
+							if (unit->getArmor()->getSize() > 1)
+								renderPos.y += 2;
+							renderPos.y -= unit->getHeight() + unit->getFloatHeight();
+							renderPos.y += 28;
+							damageTakenText[i].renderOffset = renderPos;
+							damageTakenText[i].useRenderOffset = 1;
+						}
 						else
 						{
-							renderPos.x = 0;
-							renderPos.y = 20;
+							if (damageTakenText[i].useRenderOffset)
+								renderPos = damageTakenText[i].renderOffset;
+							else
+							{
+								renderPos.x = 0;
+								renderPos.y = 20;
+							}
 						}
-					}
-					renderPos.x += 18;
-					renderPos.x += screenPosition.x + (damageTakenText[i].animationProgress / 3);
-					renderPos.y += screenPosition.y - (damageTakenText[i].animationProgress / 3);
-					damageTakenText[i].txt->setText("-" + std::to_string(damageTakenText[i].damageTaken));
-					damageTakenText[i].txt->setX(renderPos.x);
-					damageTakenText[i].txt->setY(renderPos.y);
+						renderPos.x += 18;
+						renderPos.x += screenPosition.x + (damageTakenText[i].animationProgress / 3);
+						renderPos.y += screenPosition.y - (damageTakenText[i].animationProgress / 3);
+						damageTakenText[i].txt->setText("-" + std::to_string(damageTakenText[i].damageTaken));
+						damageTakenText[i].txt->setX(renderPos.x);
+						damageTakenText[i].txt->setY(renderPos.y);
 
-					if (isTFTD) //TFTD colours
-					{
-						if (damageTakenText[i].stunDamage)
-							damageTakenText[i].txt->setColor(Palette::blockOffset(15)); //Blue (blue in both water and land missions)
-						else
-							damageTakenText[i].txt->setColor(Palette::blockOffset(11)); //Red (red in land missions, and red-ish in water missions)
-					}
-					else //UFO colours
-					{
-						if (damageTakenText[i].stunDamage)
-							damageTakenText[i].txt->setColor(Palette::blockOffset(8)); //Blue
-						else
-							damageTakenText[i].txt->setColor(Palette::blockOffset(2)); //Red
+						if (isTFTD) //TFTD colours
+						{
+							if (damageTakenText[i].stunDamage)
+								damageTakenText[i].txt->setColor(Palette::blockOffset(15)); //Blue (blue in both water and land missions)
+							else
+								damageTakenText[i].txt->setColor(Palette::blockOffset(11)); //Red (red in land missions, and red-ish in water missions)
+						}
+						else //UFO colours
+						{
+							if (damageTakenText[i].stunDamage)
+								damageTakenText[i].txt->setColor(Palette::blockOffset(8)); //Blue
+							else
+								damageTakenText[i].txt->setColor(Palette::blockOffset(2)); //Red
+						}
 					}
 				}
 			}
@@ -1363,7 +1372,10 @@ void Map::drawTerrain(Surface *surface)
 		}
 		if (this->getCursorType() != CT_NONE)
 		{
-			_arrow->blitNShade(surface, screenPosition.x + offset.x + (_spriteWidth / 2) - (_arrow->getWidth() / 2), screenPosition.y + offset.y - _arrow->getHeight() + arrowBob[_animFrame] - 7, 0); //Fluffy NameAboveUnits: Adjusted this position so the arrow is above the unit name
+			int unitNameOffset = 0; //Fluffy NameAboveUnits: Offset to for arrow when unit name is going to be rendered
+			if (Options::nameAboveUnits)
+				unitNameOffset = -7;
+			_arrow->blitNShade(surface, screenPosition.x + offset.x + (_spriteWidth / 2) - (_arrow->getWidth() / 2), screenPosition.y + offset.y - _arrow->getHeight() + arrowBob[_animFrame] - unitNameOffset, 0); 
 		}
 	}
 	delete _numWaypid;
@@ -1521,10 +1533,13 @@ void Map::animate(bool redraw)
 	}
 
 	//Fluffy ShowDamageTaken
-	for (int i = 0; i < DAMAGETAKEN_MAXINSTANCES; i++)
+	if (Options::showDamageTaken)
 	{
-		if (damageTakenText[i].animationProgress < DAMAGETAKEN_ANIMATIONMAX)
-			damageTakenText[i].animationProgress++;
+		for (int i = 0; i < DAMAGETAKEN_MAXINSTANCES; i++)
+		{
+			if (damageTakenText[i].animationProgress < DAMAGETAKEN_ANIMATIONMAX)
+				damageTakenText[i].animationProgress++;
+		}
 	}
 
 	if (redraw) _redraw = true;
