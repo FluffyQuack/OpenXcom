@@ -117,7 +117,7 @@ InventoryState::InventoryState(bool tu, BattlescapeState *parent) : _tu(tu), _pa
 	if (Options::showGraphicsBehindInventory)
 	{
 		add(_window, "window", "inventory");
-		add(_blackBackground);
+		add(_blackBackground, "window", "inventory");
 		SDL_FillRect(_blackBackground->getSurface(), NULL, Palette::blockOffset(0) + 15);
 		if(isTFTD)
 			_window->setColor(Palette::blockOffset(0) + 1);
