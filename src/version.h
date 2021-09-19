@@ -26,5 +26,5 @@
 #endif
 
 #ifndef OPENXCOM_VERSION_GIT
-#define OPENXCOM_VERSION_GIT " (FluffyMod v1.0)"
+#define OPENXCOM_VERSION_GIT " (FluffyMod v1.02)"
 #endif
