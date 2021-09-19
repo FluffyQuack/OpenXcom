@@ -1749,7 +1749,7 @@ void BattleUnit::prepareNewTurn(bool fullProcess)
 		}
 
 		//Fluffy ShowDamageTaken
-		if (currentlyAlive && (fatalWounds > 0 || fireDamage > 0))
+		if (currentlyAlive && (_faction == FACTION_PLAYER || _originalFaction == FACTION_PLAYER) && (fatalWounds > 0 || fireDamage > 0))
 			updateDamageTakenNumber(fatalWounds + fireDamage, 0); 
 	}
 
