@@ -1277,7 +1277,8 @@ bool BattlescapeGame::handlePanickingUnit(BattleUnit *unit)
 	Game *game = _parentState->getGame();
 	if (unit->getVisible() || !Options::noAlienPanicMessages)
 	{
-		getMap()->getCamera()->centerOnPosition(unit->getPosition());
+		if (!Options::ingameDuringHiddenMovement || _save->getSide() == FACTION_PLAYER || _save->getSelectedUnit()->getVisible()) //Fluffy IngameDuringHiddenMovement
+			getMap()->getCamera()->centerOnPosition(unit->getPosition());
 		if (status == STATUS_PANICKING)
 		{
 			game->pushState(new InfoboxState(game->getLanguage()->getString("STR_HAS_PANICKED", unit->getGender()).arg(unit->getName(game->getLanguage()))));
