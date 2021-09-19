@@ -1087,6 +1087,52 @@ int BattleUnit::getMorale() const
 	return _morale;
 }
 
+//Fluffy ShowDamageTaken
+void BattleUnit::updateDamageTakenNumber(int power, bool stunDamage)
+{
+	if (power < 0)
+		power = 0;
+	if (getVisible()) //Only show damage number if this is a player unit or if unit is within line-of-sight
+	{
+		int foundSlot = -1;
+		for (int i = 0; i < DAMAGETAKEN_MAXINSTANCES; i++) //Look for active slot matching current tile position
+		{
+			if (damageTakenText[i].animationProgress < DAMAGETAKEN_ANIMATIONMAX && damageTakenText[i].tilePos == _pos && damageTakenText[i].stunDamage == stunDamage)
+			{
+				foundSlot = i;
+				break;
+			}
+		}
+		if (foundSlot == -1) //Look for inactive slot if above search failed
+		{
+			for (int i = 0; i < DAMAGETAKEN_MAXINSTANCES; i++)
+			{
+				if (damageTakenText[i].animationProgress >= DAMAGETAKEN_ANIMATIONMAX)
+				{
+					foundSlot = i;
+					break;
+				}
+			}
+		}
+		if (foundSlot != -1) //Fill entry with damage info
+		{
+			if (damageTakenText[foundSlot].animationProgress >= DAMAGETAKEN_ANIMATIONMAX)
+			{
+				damageTakenText[foundSlot].tilePos = _pos;
+				damageTakenText[foundSlot].animationProgress = 0;
+				damageTakenText[foundSlot].damageTaken = power;
+				damageTakenText[foundSlot].stunDamage = stunDamage;
+				damageTakenText[foundSlot].useRenderOffset = 0;
+				damageTakenText[foundSlot].renderOffset = {0, 0, 0};
+			}
+			else
+			{
+				damageTakenText[foundSlot].damageTaken += power;
+			}
+		}
+	}
+}
+
 /**
  * Do an amount of damage.
  * @param relative The relative position of which part of armor and/or bodypart is hit.
@@ -1180,49 +1226,7 @@ int BattleUnit::damage(Position relative, int power, ItemDamageType type, bool i
 		power -= getArmor(side);
 	}
 
-	//Fluffy ShowDamageTaken
-	if(power < 0)
-		power = 0;
-	if (getVisible()) //Only show damage number if this is a player unit or if unit is within line-of-sight
-	{
-		bool stunDamage = type == DT_STUN;
-		int foundSlot = -1;
-		for (int i = 0; i < DAMAGETAKEN_MAXINSTANCES; i++) //Look for active slot matching current tile position
-		{
-			if (damageTakenText[i].animationProgress < DAMAGETAKEN_ANIMATIONMAX && damageTakenText[i].tilePos == _pos && damageTakenText[i].stunDamage == stunDamage)
-			{
-				foundSlot = i;
-				break;
-			}
-		}
-		if (foundSlot == -1) //Look for inactive slot if above search failed
-		{
-			for (int i = 0; i < DAMAGETAKEN_MAXINSTANCES; i++)
-			{
-				if (damageTakenText[i].animationProgress >= DAMAGETAKEN_ANIMATIONMAX)
-				{
-					foundSlot = i;
-					break;
-				}
-			}
-		}
-		if (foundSlot != -1) //Fill entry with damage info
-		{
-			if (damageTakenText[foundSlot].animationProgress >= DAMAGETAKEN_ANIMATIONMAX)
-			{
-				damageTakenText[foundSlot].tilePos = _pos;
-				damageTakenText[foundSlot].animationProgress = 0;
-				damageTakenText[foundSlot].damageTaken = power;
-				damageTakenText[foundSlot].stunDamage = stunDamage;
-				damageTakenText[foundSlot].useRenderOffset = 0;
-				damageTakenText[foundSlot].renderOffset = {0, 0, 0};
-			}
-			else
-			{
-				damageTakenText[foundSlot].damageTaken += power;
-			}
-		}
-	}
+	updateDamageTakenNumber(power, type == DT_STUN); //Fluffy ShowDamageTaken
 
 	if (power > 0)
 	{
@@ -1728,14 +1732,25 @@ void BattleUnit::prepareNewTurn(bool fullProcess)
 		return;
 	}
 
-	// suffer from fatal wounds
-	_health -= getFatalWounds();
-
-	// suffer from fire
-	if (!_hitByFire && _fire > 0)
 	{
-		_health -= _armor->getDamageModifier(DT_IN) * RNG::generate(Mod::FIRE_DAMAGE_RANGE[0], Mod::FIRE_DAMAGE_RANGE[1]);
-		_fire--;
+		bool currentlyAlive = _health > 0; //Fluffy ShowDamageTaken
+
+		// suffer from fatal wounds
+		int fatalWounds = getFatalWounds();
+		_health -= fatalWounds;
+
+		// suffer from fire
+		int fireDamage = 0;
+		if (!_hitByFire && _fire > 0)
+		{
+			fireDamage = _armor->getDamageModifier(DT_IN) * RNG::generate(Mod::FIRE_DAMAGE_RANGE[0], Mod::FIRE_DAMAGE_RANGE[1]);
+			_health -= fireDamage;
+			_fire--;
+		}
+
+		//Fluffy ShowDamageTaken
+		if (currentlyAlive && (fatalWounds > 0 || fireDamage > 0))
+			updateDamageTakenNumber(fatalWounds + fireDamage, 0); 
 	}
 
 	if (_health < 0)

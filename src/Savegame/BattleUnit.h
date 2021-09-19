@@ -216,6 +216,9 @@ public:
 	/// Gets the unit's bravery.
 	int getMorale() const;
 	/// Do damage to the unit.
+
+	void updateDamageTakenNumber(int power, bool stunDamage); //Fluffy ShowDamageTaken
+
 	int damage(Position relative, int power, ItemDamageType type, bool ignoreArmor = false);
 	/// Heal stun level of the unit.
 	void healStun(int power);
