@@ -145,8 +145,8 @@ NextTurnState::~NextTurnState()
 	delete _timer;
 
 	//Fluffy IngameDuringHiddenMovement
-	if (!Options::ingameDuringHiddenMovement) 
-		delete _bg; 
+	if (Options::ingameDuringHiddenMovement) 
+		delete _bg;
 }
 
 /**
