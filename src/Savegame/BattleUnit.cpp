@@ -1226,7 +1226,9 @@ int BattleUnit::damage(Position relative, int power, ItemDamageType type, bool i
 		power -= getArmor(side);
 	}
 
-	updateDamageTakenNumber(power, type == DT_STUN); //Fluffy ShowDamageTaken
+	//Fluffy ShowDamageTaken
+	if(_health > 0)
+		updateDamageTakenNumber(power, type == DT_STUN);
 
 	if (power > 0)
 	{
