@@ -643,7 +643,11 @@ void Map::drawTerrain(Surface *surface)
 	}
 
 	surface->lock();
-	BattleUnit *unitOnTileSelector = 0; //Fluffy NameAboveUnits
+
+	//Fluffy NameAboveUnits
+	BattleUnit *unitOnTileSelector = 0; 
+	bool nameShownForSelectedUnit = 0;
+
 	for (int itZ = beginZ; itZ <= endZ; itZ++)
 	{
 		bool topLayer = itZ == endZ;
@@ -791,6 +795,9 @@ void Map::drawTerrain(Surface *surface)
 								renderPos.y -= 13;
 							unitName->txt->setX(renderPos.x);
 							unitName->txt->setY(renderPos.y);
+
+							if (unit == (BattleUnit *)_save->getSelectedUnit())
+								nameShownForSelectedUnit = 1;
 
 							//By default the text colour is blue, but it can animate if mouse cursor is highlighting unit
 							if (isTFTD) //TFTD colours
@@ -1373,9 +1380,9 @@ void Map::drawTerrain(Surface *surface)
 		if (this->getCursorType() != CT_NONE)
 		{
 			int unitNameOffset = 0; //Fluffy NameAboveUnits: Offset to for arrow when unit name is going to be rendered
-			if (Options::nameAboveUnits)
+			if (Options::nameAboveUnits && nameShownForSelectedUnit)
 				unitNameOffset = -7;
-			_arrow->blitNShade(surface, screenPosition.x + offset.x + (_spriteWidth / 2) - (_arrow->getWidth() / 2), screenPosition.y + offset.y - _arrow->getHeight() + arrowBob[_animFrame] - unitNameOffset, 0); 
+			_arrow->blitNShade(surface, screenPosition.x + offset.x + (_spriteWidth / 2) - (_arrow->getWidth() / 2), (screenPosition.y + offset.y - _arrow->getHeight() + arrowBob[_animFrame]) + unitNameOffset, 0); 
 		}
 	}
 	delete _numWaypid;
